@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 
-import Axios from "axios";
+import WeatherDisplay from "./WeatherDisplay";
 
 const URL = `https://weather-backen.herokuapp.com`;
 
 const fetchData = async (q) => {
-  const { data } = await Axios.get(`${URL}?search=${q}`);
+  const response = await fetch(`${URL}?search=${q}`);
+  const data = await response.json();  
   return data;
 };
 
 function App() {
-  const [query, setQuery] = useState("New York");
+  const [query, setQuery] = useState("Mumbai");
   const [weather, setWeather] = useState([]);
 
   useEffect(() => {
@@ -29,11 +30,10 @@ function App() {
       setQuery("");
     }
   };
+  var date = new Date().getHours();
 
   return (
-    <div
-      className={weather.temperature > 25 ? "sun-container" : "main-container"}
-    >
+    <div className="container">
       <input
         type="text"
         className="search"
@@ -42,26 +42,7 @@ function App() {
         onChange={(e) => setQuery(e.target.value)}
         onKeyPress={search}
       />
-      {weather && (
-        <div className="city">
-          <h2 className="city-name">
-            <span>{weather.name}</span>
-            <sup>{weather.country}</sup>
-          </h2>
-          <div className="city-temp">
-            {weather.temperature}
-            <sup>&deg;C</sup>
-          </div>
-          <div className="info">
-            <img
-              className="city-icon"
-              src={weather.icon}
-              alt={weather.description}
-            />
-            <p>{weather.description}</p>
-          </div>
-        </div>
-      )}
+      {weather && <WeatherDisplay weather={weather} />}
     </div>
   );
 }
